@@ -3,18 +3,16 @@ from dash import dcc, html
 import plotly.graph_objs as go
 import pandas as pd
 
-# Read data from CSV file
-df = pd.read_csv('movie_data.csv')
+df = pd.read_csv('movie_data.csv') # Read the data
 
-# Calculate average rating for each year
-average_ratings = df.groupby('Year')['Rating'].mean()
+average_ratings = df.groupby('Year')['Rating'].mean() # Calculate average ratings for each year
 average_ratings = average_ratings.round(2)
 sorted_df = df.sort_values(by=['Rating', 'Number of Raters'], ascending=[False, False])
 top_bottom_movies = pd.concat([sorted_df.groupby('Country').head(5), sorted_df.groupby('Country').tail(5)])
 
 average_ratings.index = average_ratings.index.astype(str)  # Convert index to string for x-axis
-df['Number of Raters'] = df['Number of Raters'].round(3)
-app = dash.Dash(__name__, external_stylesheets=['https://fonts.googleapis.com/css2?family=Coming+Soon&display=swap'])
+df['Number of Raters'] = df['Number of Raters'].round(3) # Round the number of raters to 3 decimal places
+app = dash.Dash(__name__, external_stylesheets=['https://fonts.googleapis.com/css2?family=Coming+Soon&display=swap']) 
 
 app.layout = html.Div([
     dcc.Graph(

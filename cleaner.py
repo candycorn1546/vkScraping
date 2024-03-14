@@ -1,48 +1,45 @@
 import os
 import time
-
 import pandas as pd
 
 
-def remove_duplicates(text_file):
+def remove_duplicates(text_file): # function to remove duplicates from a text file
     with open(text_file, "r") as file:
         lines = file.readlines()
 
-    # Remove duplicates while preserving order
     unique_lines = list(dict.fromkeys(lines))
 
-    # Open the file in write mode and overwrite with unique links
     with open(text_file, "w") as file:
         file.writelines(unique_lines)
 
 
-def remove_urls():
-    counter = 0  # Initialize counter
-    while True:
-        with open('404.txt', 'r') as file: # Open file in read mode
-            urls_to_remove = {line.strip() for line in file} # Create a set of URLs to remove
-        with open('processed.txt', 'r') as file: # Open file in read mode
-            urls_to_remove.update({line.strip() for line in file}) # Update set with URLs to remove
-        movie_data = pd.read_csv('movie_data.csv') # Read CSV file
-        urls_to_remove.update(set(movie_data['URL'])) # Update set with URLs to remove
+def remove_urls(): # function to remove URLs
+    counter = 0 # initialize counter
+    while counter < 1000: # while loop
+        with open('404.txt', 'r') as file: # open the file in read mode
+            urls_to_remove = {line.strip() for line in file}
+        with open('processed.txt', 'r') as file:
+            urls_to_remove.update({line.strip() for line in file})
+        movie_data = pd.read_csv('movie_data.csv')
+        urls_to_remove.update(set(movie_data['URL'])) # update the set with the URLs from the CSV file
 
-        with open('302.txt', 'r') as file: # Open file in read mode
-            lines = file.readlines() # Read lines from file
+        with open('302.txt', 'r') as file:
+            lines = file.readlines()
 
-        before_size = os.path.getsize('302.txt') # Get size before removing URLs
+        before_size = os.path.getsize('302.txt') # get the size of the file
 
-        filtered_lines = [line for line in lines if line.strip() not in urls_to_remove] # Filter out URLs to remove
+        filtered_lines = [line for line in lines if line.strip() not in urls_to_remove] # filter out the URLs to remove
 
-        with open('302.txt', 'w') as file: # Open file in write mode
-            file.writelines(filtered_lines) # Write filtered lines to file
+        with open('302.txt', 'w') as file: # open the file in write mode
+            file.writelines(filtered_lines)
 
-        after_size = os.path.getsize('302.txt') # Get size after removing URLs
-        different = before_size - after_size
-        print(f"Size difference: {different} bytes")
+        after_size = os.path.getsize('302.txt') # get the size of the file after removing the URLs
+        different = before_size - after_size # calculate the difference in size
+        print(f"Size difference: {different} bytes") # print the difference in size
 
-        counter += 1  # Increment counter
+        counter += 1 # increment the counter
         if counter % 10 == 0:
-            print(f"Iteration {counter} completed.")  # Print current iteration
+            print(f"Iteration {counter} completed.") # print the iteration number
         time.sleep(10)
 
 

@@ -5,7 +5,6 @@ import os
 import re
 import ssl
 import time
-
 import certifi
 import pandas as pd
 import aiohttp
@@ -16,7 +15,7 @@ ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
 
 
-def load_existing_data(csv_file):
+def load_existing_data(csv_file): # function to load existing data from CSV file
     if os.path.exists(csv_file):
         existing_data = pd.read_csv(csv_file)
         return existing_data.drop_duplicates(subset=['URL'])
@@ -26,7 +25,7 @@ def load_existing_data(csv_file):
                      'Number of Episode', 'URL'])
 
 
-async def get_movie_info(url, session, csv_file):
+async def get_movie_info(url, session, csv_file): # function to get movie information
     processed_urls = set()
     user_agents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
@@ -43,12 +42,10 @@ async def get_movie_info(url, session, csv_file):
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
     ]
-
     await asyncio.sleep(random.uniform(5, 10))
-    while True:
-        headers = {'User-Agent': random.choice(user_agents)}
-
-        try:
+    while True: # infinite loop
+        headers = {'User-Agent': random.choice(user_agents)} # select a random user agent
+        try: # try block
             async with session.get(url, headers=headers, allow_redirects=False) as response:
                 logging.info(f"Requesting URL: {url}, Status Code: {response.status}")
                 if response.status == 200:
@@ -148,25 +145,25 @@ async def get_movie_info(url, session, csv_file):
                             file.write(f"{url}\n")
                     return None
 
-        except aiohttp.ClientConnectorError as e:
-            logging.error(f"Error connecting to server: {e}")
-        except aiohttp.client_exceptions.ServerDisconnectedError as e:
+        except aiohttp.ClientConnectorError as e: # except block
+            logging.error(f"Error connecting to server: {e}") 
+        except aiohttp.client_exceptions.ServerDisconnectedError as e: # except block
             logging.error(f"Server disconnected while processing URL: {url}")
-        except Exception as e:
+        except Exception as e: # except block
             logging.error(f"Error processing URL {url}: {e}")
 
     return None
 
 
-async def fetch_urls(urls, session, csv_file):
+async def fetch_urls(urls, session, csv_file): # function to fetch URLs
     tasks = [get_movie_info(url, session, csv_file) for url in urls]
     return await asyncio.gather(*tasks)
 
 
-async def scrape_unique_urls(text_file, csv_file):
+async def scrape_unique_urls(text_file, csv_file): # function to scrape unique URLs
     unique_urls = set()
 
-    with open(text_file, 'r') as file:
+    with open(text_file, 'r') as file: # open the file in read mode
         for line in file:
             url = line.strip()
             unique_urls.add(url)
@@ -184,7 +181,6 @@ async def main():
     movie_data = await scrape_unique_urls(text_file, csv_file)
     end_time = time.time()
     print(f"Scraping completed in {end_time - start_time} seconds.")
-    # Code for writing to files
 
 
 if __name__ == '__main__':
