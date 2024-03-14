@@ -185,5 +185,5 @@ async def main():
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.ERROR)
-    logging.getLogger("aiohttp.client").setLevel(logging.INFO)  # Set logging level for aiohttp.client to INFO
+    logging.getLogger("aiohttp.client").setLevel(logging.INFO)  # set logging configuration
     asyncio.run(main())
